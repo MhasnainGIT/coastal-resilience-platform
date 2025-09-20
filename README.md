@@ -1,5 +1,5 @@
 # 🌊 Coastal Resilience Platform
-## Government of India - Disaster Management System
+## 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
@@ -334,10 +334,10 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🆘 **Support**
 
-### Government Support
-- **Email**: tech-support@coastal-resilience.gov.in
-- **Phone**: 1800-XXX-XXXX (Toll-free)
-- **Portal**: https://support.coastal-resilience.gov.in
+###  Support
+- **Email**:mohdhasnain1544@gmail.com 
+- **Phone**: 8919019679
+- **Portal**: https://
 
 ### Community Support
 - **GitHub Issues**: [Create an issue](https://github.com/your-username/coastal-resilience-platform/issues)
