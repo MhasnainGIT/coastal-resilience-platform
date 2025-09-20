@@ -2,6 +2,7 @@ const Report = require('../models/Report');
 const Joi = require('joi');
 const { uploadToS3 } = require('../services/s3Service');
 const { analyzeReport } = require('../services/mlService');
+const realDisasterData = require('../services/realDisasterData');
 
 const reportSchema = Joi.object({
   title: Joi.string().required(),
@@ -76,7 +77,8 @@ exports.getReports = async (req, res) => {
       severity,
       lat,
       lng,
-      radius = 10000 // 10km default
+      radius = 10000, // 10km default
+      includeHistorical = 'true'
     } = req.query;
 
     const query = {};
@@ -98,17 +100,45 @@ exports.getReports = async (req, res) => {
       };
     }
 
-    const reports = await Report.find(query)
+    // Get user-submitted reports
+    const userReports = await Report.find(query)
       .populate('user', 'name email')
       .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+      .limit(Math.ceil(limit / 2))
+      .skip((page - 1) * Math.ceil(limit / 2));
 
-    const total = await Report.countDocuments(query);
+    let allReports = [...userReports];
+
+    // Include real historical disaster data
+    if (includeHistorical === 'true') {
+      const historicalReports = await realDisasterData.getIndianCoastalReports();
+      
+      // Filter historical reports based on query parameters
+      let filteredHistorical = historicalReports;
+      if (hazardType) {
+        filteredHistorical = filteredHistorical.filter(report => report.hazardType === hazardType);
+      }
+      if (severity) {
+        filteredHistorical = filteredHistorical.filter(report => report.severity === severity);
+      }
+      
+      // Add historical reports
+      allReports = [...allReports, ...filteredHistorical.slice(0, Math.floor(limit / 2))];
+    }
+
+    // Sort all reports by date
+    allReports.sort((a, b) => new Date(b.publishedAt || b.createdAt) - new Date(a.publishedAt || a.createdAt));
+    
+    // Limit results
+    allReports = allReports.slice(0, limit);
+
+    const userTotal = await Report.countDocuments(query);
+    const historicalTotal = includeHistorical === 'true' ? 8 : 0; // 8 historical reports
+    const total = userTotal + historicalTotal;
 
     res.json({
       success: true,
-      reports,
+      reports: allReports,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),

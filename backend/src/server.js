@@ -8,10 +8,16 @@ const socketIo = require('socket.io');
 
 const connectDB = require('./config/database');
 
-// Import routes
-const authRoutes = require('./routes/auth');
-const reportRoutes = require('./routes/reports');
-const alertRoutes = require('./routes/alerts');
+// Import routes with error handling
+try {
+  var authRoutes = require('./routes/auth');
+  var reportRoutes = require('./routes/reports');
+  var alertRoutes = require('./routes/alerts');
+  var socialMediaRoutes = require('./routes/socialMedia');
+} catch (error) {
+  console.error('Error loading routes:', error.message);
+  process.exit(1);
+}
 
 const app = express();
 const server = http.createServer(app);
@@ -56,6 +62,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/alerts', alertRoutes);
+app.use('/api/social-media', socialMediaRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

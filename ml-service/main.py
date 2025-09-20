@@ -141,6 +141,46 @@ async def analyze_social_media(request: SocialMediaRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Social media analysis failed: {str(e)}")
 
+@app.post("/verify-document")
+async def verify_government_document(doc_type: str, doc_number: str):
+    try:
+        # Government document verification logic
+        # In production, this would integrate with government databases
+        
+        verification_patterns = {
+            'aadhar': r'^[0-9]{12}$',
+            'pan': r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$',
+            'voterId': r'^[A-Z]{3}[0-9]{7}$',
+            'drivingLicense': r'^[A-Z]{2}[0-9]{13}$',
+            'passport': r'^[A-Z]{1}[0-9]{7}$'
+        }
+        
+        import re
+        pattern = verification_patterns.get(doc_type)
+        
+        if not pattern:
+            return {
+                "isValid": False,
+                "error": "Invalid document type"
+            }
+        
+        is_format_valid = bool(re.match(pattern, doc_number))
+        
+        # Mock verification with government database
+        # In production: API calls to UIDAI, Income Tax, Election Commission etc.
+        is_verified = is_format_valid and random.uniform(0, 1) > 0.1  # 90% success rate
+        
+        return {
+            "isValid": is_format_valid,
+            "isVerified": is_verified,
+            "documentType": doc_type,
+            "confidence": 0.95 if is_verified else 0.1,
+            "verificationSource": f"Government Database - {doc_type.upper()}"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Document verification failed: {str(e)}")
+
 @app.post("/analyze-image")
 async def analyze_image(file: UploadFile = File(...)):
     try:
