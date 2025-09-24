@@ -14,6 +14,8 @@ try {
   var reportRoutes = require('./routes/reports');
   var alertRoutes = require('./routes/alerts');
   var socialMediaRoutes = require('./routes/socialMedia');
+  var governmentRoutes = require('./routes/government');
+  var socialRoutes = require('./routes/social');
 } catch (error) {
   console.error('Error loading routes:', error.message);
   process.exit(1);
@@ -63,6 +65,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/social-media', socialMediaRoutes);
+app.use('/api/government', governmentRoutes);
+app.use('/api/social', socialRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

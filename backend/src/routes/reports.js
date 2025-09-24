@@ -27,9 +27,23 @@ const upload = multer({
   }
 });
 
+// Citizen routes
 router.post('/', auth, upload.array('media', 5), createReport);
+router.get('/my', auth, getReports);
+
+// Public routes (for both citizens and government)
 router.get('/', auth, getReports);
 router.get('/:id', auth, getReportById);
-router.patch('/:id/status', auth, authorize('admin', 'gov_officer'), updateReportStatus);
+router.patch('/:id/status', auth, authorize('gov_officer', 'admin'), updateReportStatus);
+router.delete('/:id', auth, authorize('gov_officer', 'admin'), async (req, res) => {
+  try {
+    const Report = require('../models/Report');
+    await Report.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Report deleted successfully' });
+  } catch (error) {
+    console.error('Delete report error:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
 
 module.exports = router;

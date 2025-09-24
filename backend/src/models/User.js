@@ -27,6 +27,27 @@ const userSchema = new mongoose.Schema({
     enum: ['citizen', 'admin', 'gov_officer'],
     default: 'citizen'
   },
+  department: {
+    type: String,
+    required: function() { return this.role === 'gov_officer' || this.role === 'admin'; }
+  },
+  employeeId: {
+    type: String,
+    required: function() { return this.role === 'gov_officer' || this.role === 'admin'; },
+    unique: true,
+    sparse: true
+  },
+  permissions: {
+    type: [String],
+    default: function() {
+      switch(this.role) {
+        case 'citizen': return ['create_report', 'view_own_reports', 'send_sos'];
+        case 'gov_officer': return ['view_all_reports', 'verify_reports', 'create_alerts'];
+        case 'admin': return ['view_all_reports', 'verify_reports', 'create_alerts', 'manage_users'];
+        default: return [];
+      }
+    }
+  },
   location: {
     type: {
       type: String,
