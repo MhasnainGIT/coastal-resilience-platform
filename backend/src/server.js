@@ -16,6 +16,7 @@ try {
   var socialMediaRoutes = require('./routes/socialMedia');
   var governmentRoutes = require('./routes/government');
   var socialRoutes = require('./routes/social');
+  var tsunamiRoutes = require('./routes/tsunami');
 } catch (error) {
   console.error('Error loading routes:', error.message);
   process.exit(1);
@@ -67,6 +68,8 @@ app.use('/api/alerts', alertRoutes);
 app.use('/api/social-media', socialMediaRoutes);
 app.use('/api/government', governmentRoutes);
 app.use('/api/social', socialRoutes);
+app.use('/api/tsunami', tsunamiRoutes);
+app.use('/api/rapidapi', require('./routes/rapidapi'));
 
 // Health check
 app.get('/api/health', (req, res) => {
